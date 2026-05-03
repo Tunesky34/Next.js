@@ -1,0 +1,38 @@
+stages:
+  - install
+  - test
+  - build
+  - deploy
+
+# Cache node_modules to speed up subsequent runs
+cache:
+  paths:
+    - node_modules/
+    - .next/cache/
+
+install_dependencies:
+  stage: install
+  script:
+    - npm install
+
+lint_test:
+  stage: test
+  script:
+    - npm run lint
+
+build_project:
+  stage: build
+  script:
+    - npm run build
+  artifacts:
+    paths:
+      - .next/
+    expire_in: 1 week
+
+deploy_job:
+  stage: deploy
+  script:
+    - echo "Deploying to production server..."
+    # Add your specific deployment commands here (e.g., pm2 reload)
+  only:
+    - main
