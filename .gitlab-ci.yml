@@ -1,3 +1,5 @@
+image: node:20.9.0
+
 stages:
   - install
   - test
@@ -6,6 +8,7 @@ stages:
 
 # Cache node_modules to speed up subsequent runs
 cache:
+  key: "${CI_COMMIT_REF_SLUG}"
   paths:
     - node_modules/
     - .next/cache/
@@ -13,7 +16,7 @@ cache:
 install_dependencies:
   stage: install
   script:
-    - npm install
+    - npm ci
 
 lint_test:
   stage: test
