@@ -6,7 +6,6 @@ stages:
   - build
   - deploy
 
-# Cache node_modules to speed up subsequent runs
 cache:
   key: "${CI_COMMIT_REF_SLUG}"
   paths:
@@ -29,13 +28,15 @@ build_project:
     - npm run build
   artifacts:
     paths:
-      - .next/
+      - out/
     expire_in: 1 week
 
-deploy_job:
+pages:
   stage: deploy
   script:
-    - npm install -g pm2
-    - pm2 start "npm run start" --name "next-app" || pm2 restart "next-app"
+    - cp -r out public
+  artifacts:
+    paths:
+      - public/
   only:
     - main
