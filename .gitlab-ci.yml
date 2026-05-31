@@ -38,6 +38,7 @@ sonarqube_check:
   only:
     - main
   allow_failure: true
+  
 
 snyk_security:
   stage: security
