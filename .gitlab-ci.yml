@@ -56,7 +56,7 @@ snyk_security:
     - echo "Token length: ${#SNYK_TOKEN}"
     - snyk config set api=$SNYK_TOKEN
     - snyk test --severity-threshold=high
-  allow_failure: true
+  allow_failure: false
 
 build_project:
   stage: build
