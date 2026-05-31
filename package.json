@@ -6,11 +6,16 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "monitor": "docker compose up --build",
+    "sonar": "sonar-scanner",
+    "snyk:test": "snyk test",
+    "snyk:monitor": "snyk monitor"
   },
   "dependencies": {
     "@tailwindcss/oxide-linux-x64-gnu": "^4.2.4",
     "next": "^15.3.2",
+    "prom-client": "^15.1.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },

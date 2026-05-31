@@ -1,7 +1,7 @@
-<<<<<<< HEAD
 stages:
   - install
   - test
+  - security
   - build
   - deploy
 
@@ -27,6 +27,22 @@ lint_test:
   script:
     - npm run lint
 
+sonarqube_scan:
+  stage: test
+  image: sonarsource/sonar-scanner-cli:latest
+  script:
+    - sonar-scanner
+  allow_failure: true
+
+snyk_security:
+  stage: security
+  script:
+    - npm install -g snyk
+    - snyk auth $SNYK_TOKEN
+    - snyk test --severity-threshold=high
+    - snyk monitor
+  allow_failure: true
+
 build_project:
   stage: build
   script:
@@ -45,22 +61,3 @@ pages:
       - public/
   only:
     - main
-=======
-# The Docker image that will be used to build your app
-image: next.js
-create-pages:
-  pages:
-    # The folder that contains the files to be exposed at the Page URL
-    publish: public
-  rules:
-    # This ensures that only pushes to the default branch will trigger
-    # a pages deploy
-    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
-  # Functions that should be executed before the build script is run
-  before_script:
-    - npm install
-    - npm run dev
-  script:
-    - npm run build
-    - npm run start
->>>>>>> 263c540b764389acc6273f629b0aea4bb1f1e7ae

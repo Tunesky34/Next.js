@@ -16,6 +16,54 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Monitoring with Prometheus and Grafana
+
+This project now exposes Prometheus metrics at `/api/metrics` and a health check at `/api/health`.
+
+A local monitoring stack is available under `monitoring/` and can be started from the project root with:
+
+```bash
+npm install
+npm run monitor
+```
+
+Then open:
+
+- App: http://localhost:3000
+- Prometheus: http://localhost:9090
+- Grafana: http://localhost:3001
+- Alertmanager: http://localhost:9093
+
+Update `monitoring/alertmanager.yml` to point alerts at your preferred receiver (Slack, email, webhook, etc.).
+
+## Code Quality & Security
+
+### SonarQube Analysis
+
+Run code analysis locally:
+
+```bash
+npm run sonar
+```
+
+Requires SonarQube server running. Set `SONAR_HOST_URL` and `SONAR_TOKEN` environment variables.
+
+### Snyk Security Scanning
+
+Test for vulnerabilities:
+
+```bash
+npm run snyk:test
+```
+
+Monitor project:
+
+```bash
+npm run snyk:monitor
+```
+
+Requires `SNYK_TOKEN` environment variable. Get your token at https://snyk.io
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

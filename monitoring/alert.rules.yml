@@ -1,0 +1,29 @@
+groups:
+  - name: nextjs.rules
+    rules:
+      - alert: NextjsAppDown
+        expr: up{job="nextjs-app"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Next.js app is down"
+          description: "Prometheus has not been able to scrape the Next.js app for more than 2 minutes."
+
+      - alert: NextjsHighLatency
+        expr: histogram_quantile(0.95, sum(rate(nextjs_http_request_duration_ms_bucket[5m])) by (le)) > 1000
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Next.js 95th percentile latency is high"
+          description: "The 95th percentile request duration is above 1000ms for more than 5 minutes."
+
+      - alert: NextjsErrorRate
+        expr: sum(rate(nextjs_http_requests_total{status=~"5.."}[5m])) > 0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Next.js application has 5xx errors"
+          description: "The application has returned server errors in the last 5 minutes."
