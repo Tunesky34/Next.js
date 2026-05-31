@@ -43,7 +43,7 @@ snyk_security:
   stage: security
   script:
     - npm install -g snyk
-    - snyk auth $SNYK_TOKEN
+    - export SNYK_TOKEN=$SNYK_TOKEN
     - snyk test --severity-threshold=high
     - snyk monitor
   allow_failure: true
