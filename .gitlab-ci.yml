@@ -5,17 +5,19 @@ stages:
   - build
   - deploy
 
-before_script:
-  - curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
-  - apt-get install -y nodejs
-  - node --version
-  - npm --version
+default:
+  image: node:20
 
 cache:
   key: "${CI_COMMIT_REF_SLUG}"
   paths:
     - node_modules/
     - .next/cache/
+    - .sonar/cache/
+
+variables:
+  SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"
+  GIT_DEPTH: "0"
 
 install_dependencies:
   stage: install
@@ -27,38 +29,14 @@ lint_test:
   script:
     - npm run lint
 
-sonarqube-check:
-  image: node:20
-
+sonarqube_check:
   stage: test
-
-  variables:
-    SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"
-    GIT_DEPTH: "0"
-
-  cache:
-    paths:
-      - .sonar/cache
-      - node_modules/
-
-  before_script:
-    - npm install -g sonarqube-scanner
-    - npm install
-
   script:
-    - npm run lint
+    - npm install -g sonarqube-scanner
     - npm run build
     - sonar-scanner
-
   only:
     - main
-
-
-sonarqube_scan:
-  stage: test
-  image: sonarsource/sonar-scanner-cli:latest
-  script:
-    - sonar-scanner
   allow_failure: true
 
 snyk_security:
@@ -74,6 +52,7 @@ build_project:
   stage: build
   script:
     - npm run build
+    - npm run export
   artifacts:
     paths:
       - out/
@@ -82,7 +61,8 @@ build_project:
 pages:
   stage: deploy
   script:
-    - cp -r out public
+    - mkdir public
+    - cp -r out/* public/
   artifacts:
     paths:
       - public/
