@@ -8,6 +8,10 @@ stages:
 default:
   image: node:20
 
+variables:
+  SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"
+  GIT_DEPTH: "0"
+
 cache:
   key: "${CI_COMMIT_REF_SLUG}"
   paths:
@@ -15,61 +19,63 @@ cache:
     - .next/cache/
     - .sonar/cache/
 
-variables:
-  SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"
-  GIT_DEPTH: "0"
-
 install_dependencies:
   stage: install
   script:
     - npm ci
+  artifacts:
+    paths:
+      - node_modules/
+    expire_in: 1 hour
 
 lint_test:
   stage: test
+  dependencies:
+    - install_dependencies
   script:
     - npm run lint
 
 sonarqube_check:
   stage: test
+  dependencies:
+    - install_dependencies
   script:
     - npm install -g sonarqube-scanner
     - npm run build
     - sonar-scanner
-  only:
-    - main
   allow_failure: true
-  
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
 
 snyk_security:
   stage: security
-  image: node:20
-
+  dependencies:
+    - install_dependencies
   script:
     - npm install -g snyk
     - echo "Token length: ${#SNYK_TOKEN}"
     - snyk config set api=$SNYK_TOKEN
-    - snyk auth $SNYK_TOKEN
     - snyk test --severity-threshold=high
-
   allow_failure: true
 
 build_project:
   stage: build
+  dependencies:
+    - install_dependencies
   script:
     - npm run build
-    - npm run export
   artifacts:
     paths:
-      - out/
+      - .next/
     expire_in: 1 week
 
 pages:
   stage: deploy
   script:
     - mkdir public
-    - cp -r out/* public/
+    - echo "GitLab Pages deployed successfully" > public/index.html
   artifacts:
     paths:
       - public/
-  only:
-    - main
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
