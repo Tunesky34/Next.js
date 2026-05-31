@@ -41,11 +41,15 @@ sonarqube_check:
 
 snyk_security:
   stage: security
+  image: node:20
+
   script:
     - npm install -g snyk
-    - export SNYK_TOKEN=$SNYK_TOKEN
+    - echo "Token length: ${#SNYK_TOKEN}"
+    - snyk config set api=$SNYK_TOKEN
+    - snyk auth $SNYK_TOKEN
     - snyk test --severity-threshold=high
-    - snyk monitor
+
   allow_failure: true
 
 build_project:
