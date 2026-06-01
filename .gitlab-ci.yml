@@ -38,7 +38,7 @@ lint_test:
     - npm run lint
 
 sonarqube_check:
-  stage: test
+  stage: security
   dependencies:
     - install_dependencies
   script:
@@ -46,8 +46,6 @@ sonarqube_check:
     - npm run build
     - sonar-scanner
   allow_failure: true
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
 
 snyk_security:
   stage: security
@@ -55,8 +53,7 @@ snyk_security:
     - install_dependencies
   script:
     - npm install -g snyk
-    - echo "Token length: ${#SNYK_TOKEN}"
-    - snyk config set api=$SNYK_TOKEN
+    - snyk auth $SNYK_TOKEN
     - snyk test --severity-threshold=high
   allow_failure: true
 
@@ -66,18 +63,12 @@ build_project:
     - install_dependencies
   script:
     - npm run build
-  artifacts:
-    paths:
-      - .next/
-    expire_in: 1 week
 
 pages:
   stage: deploy
   script:
-    - mkdir public
+    - mkdir -p public
     - echo "GitLab Pages deployed successfully" > public/index.html
   artifacts:
     paths:
       - public/
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
