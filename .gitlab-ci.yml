@@ -72,7 +72,7 @@ build_project:
 pages:
   stage: deploy
   script:
-    - mkdir -p public
+    - mkdir public
     - echo "GitLab Pages deployed successfully" > public/index.html
   artifacts:
     paths:
