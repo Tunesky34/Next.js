@@ -7,6 +7,8 @@ stages:
 
 default:
   image: node:20
+  tags:
+    - my-app
 
 variables:
   SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"
