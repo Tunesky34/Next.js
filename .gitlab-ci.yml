@@ -14,49 +14,66 @@ variables:
   GIT_DEPTH: "0"
 
 cache:
+  key: "${CI_COMMIT_REF_SLUG}"
   paths:
     - node_modules/
-    - .sonar/cache/   # <-- add this
-    - .next/cache/    # <-- optional, speeds up Next.js builds
+    - .sonar/cache/
+    - .next/cache/
 
+# ── Install ────────────────────────────────────────────────
 install_dependencies:
   stage: install
   script:
     - npm ci
+  artifacts:
+    paths:
+      - node_modules/
+    expire_in: 1 hour
 
+# ── Test ──────────────────────────────────────────────────
 lint_test:
   stage: test
+  needs: [install_dependencies]
   script:
-    - npm ci
     - npm run lint
 
+# ── Security ──────────────────────────────────────────────
 sonarqube_check:
   stage: security
+  needs: [install_dependencies]
   script:
-    - npm ci
     - npm run build
     - npx sonarqube-scanner
   allow_failure: true
 
 snyk_security:
   stage: security
+  needs: [install_dependencies]
   script:
-    - npm ci
     - npx snyk auth $SNYK_TOKEN
     - npx snyk test --severity-threshold=high
   allow_failure: true
 
+# ── Build ─────────────────────────────────────────────────
 build_project:
   stage: build
+  needs: [lint_test]
   script:
-    - npm ci
     - npm run build
+  artifacts:
+    paths:
+      - .next/
+    expire_in: 1 hour
 
+# ── Deploy ────────────────────────────────────────────────
 pages:
   stage: deploy
+  needs: [build_project]
   script:
     - mkdir -p public
     - echo "GitLab Pages deployed successfully" > public/index.html
   artifacts:
     paths:
       - public/
+  only:
+    - main
