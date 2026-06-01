@@ -6,7 +6,6 @@ stages:
   - deploy
 
 default:
-  image: node:20
   tags:
     - my-app
 
@@ -15,49 +14,41 @@ variables:
   GIT_DEPTH: "0"
 
 cache:
+  key: npm-cache
   paths:
     - node_modules/
-    - .npm/
 
 install_dependencies:
   stage: install
   script:
     - npm ci
-  artifacts:
-    paths:
-      - node_modules/
-    expire_in: 1 week
 
 lint_test:
   stage: test
-  dependencies:
-    - install_dependencies
   script:
+    - npm ci
     - npm run lint
 
 sonarqube_check:
   stage: security
-  dependencies:
-    - install_dependencies
   script:
+    - npm ci
     - npm run build
     - npx sonarqube-scanner
   allow_failure: true
 
 snyk_security:
   stage: security
-  dependencies:
-    - install_dependencies
   script:
+    - npm ci
     - npx snyk auth $SNYK_TOKEN
     - npx snyk test --severity-threshold=high
   allow_failure: true
 
 build_project:
   stage: build
-  dependencies:
-    - install_dependencies
   script:
+    - npm ci
     - npm run build
 
 pages:
