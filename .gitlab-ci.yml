@@ -26,7 +26,7 @@ install_dependencies:
   artifacts:
     paths:
       - node_modules/
-    expire_in: 1 hour
+    expire_in: 1 week
 
 lint_test:
   stage: test
@@ -78,4 +78,4 @@ pages:
     paths:
       - public/
   rules:
-    - if: '$CI_COMMIT_BRANCH == "tunde"'
+    - if: '$CI_COMMIT_BRANCH == "main"'
