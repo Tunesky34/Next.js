@@ -14,9 +14,10 @@ variables:
   GIT_DEPTH: "0"
 
 cache:
-  key: npm-cache
   paths:
     - node_modules/
+    - .sonar/cache/   # <-- add this
+    - .next/cache/    # <-- optional, speeds up Next.js builds
 
 install_dependencies:
   stage: install
