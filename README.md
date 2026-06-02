@@ -38,6 +38,8 @@ Update `monitoring/alertmanager.yml` to point alerts at your preferred receiver 
 
 ## Code Quality & Security
 
+See `docs/sonarqube-snyk.md` for full SonarQube and Snyk setup, configuration, and usage.
+
 ### SonarQube Analysis
 
 Run code analysis locally:
